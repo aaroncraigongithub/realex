@@ -10,7 +10,7 @@ module RealEx
     def initialize(hash = {})
       super(hash)
       self.comments ||= []
-      self.autosettle ||= true
+      self.autosettle = true if self.autosettle.nil?
       self.currency ||= RealEx::Config.currency || 'EUR'
       self.remote_uri ||= RealEx::Config.remote_uri || '/epage-remote.cgi'
       self.real_vault_uri ||= RealEx::Config.real_vault_uri || '/epage-remote-plugins.cgi'
@@ -27,6 +27,7 @@ module RealEx
     def to_xml(&block)
       xml = RealEx::Client.build_xml(request_type) do |r|
         r.merchantid RealEx::Config.merchant_id
+        r.autosettle :flag => autosettle? ? '1' : '0'
         r.orderid order_id
         r.authcode authcode if authcode
         r.pasref pasref if pasref
